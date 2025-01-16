@@ -1,18 +1,24 @@
-const express = require('express');
-const Connect = require('./DB');
-const app = express();
-const auth_route = require("./routes/auth")
 const dotenv = require('dotenv');
-
-/// PORT
-const PORT = 5000
 
 // To configure values coming form .env file
 dotenv.config();
 
 
+const express = require('express');
+const cors = require('cors');
+const Connect = require('./DB');
+const app = express();
+const auth_route = require("./routes/auth")
+
+
+/// PORT
+const PORT = process.env.PORT || 3000;
+
 /// Connect to MongoDB
 Connect();
+
+/// Middlewer to deal with CORS
+app.use(cors());
 
 /// Middlewer to deal with JSON data
 app.use(express.json());
