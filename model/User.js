@@ -18,7 +18,12 @@ password:{
 image:{
     type:Buffer,
     default:null
-}
+},
+isVerified:{
+    type:Boolean,
+    default:false,
+    required:true
+},
 })
 
 const User = mongoose.model("User",userSchma)

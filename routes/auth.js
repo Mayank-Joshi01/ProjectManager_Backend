@@ -1,5 +1,5 @@
 const express =require("express")
-const {Signup,Login,Googleauth} = require("../controller/auth_controller")
+const {Signup,Login,Googleauth,verifyEmail,ResendOTP} = require("../controller/auth_controller")
 const { check} = require('express-validator');
 const router = express.Router()
 
@@ -19,6 +19,12 @@ router.post("/signup",[
     check("email","Enter a valid email").isEmail(),
     check("password","Minimum Length is 8").isLength({min : 8})
 ],Signup);
+
+/// Router 4 : email verification
+router.post("/emailverification",verifyEmail);
+
+/// Router 5 : Resend OTP
+router.post("/resendotp",ResendOTP);
 
 
 
