@@ -32,7 +32,7 @@ const Googleauth = async (req, res) => {
     });
 
     // Destructuring the data from google
-    const {email,name,image}=data;
+    const {email,name,picture}=data;
 
     // Checking if the user already exist or not
         user = await User.findOne({email:email});
@@ -40,7 +40,7 @@ const Googleauth = async (req, res) => {
     if (user){
         let token = jwt.sign({email:email,id:user._id},process.env.JWT_SECRET);
 
-        return res.status(201).json({status:true,data:user,token:token,img:image})
+        return res.status(201).json({status:true,data:user,token:token,img:picture})
     }
     else{
 
@@ -54,8 +54,8 @@ const Googleauth = async (req, res) => {
         // Generating token 
          token = jwt.sign({email:email,id:user._id},process.env.JWT_SECRET);
 
-         // Sending data to frontend
-         return res.status(201).json({status:true,data:user,token:token,img:image})
+         // Sending data to frontend         
+         return res.status(201).json({status:true,data:user,token:token,img:picture})
 
     }
 
@@ -157,7 +157,8 @@ const Signup = async (req, res) => {
        /// Sending the OTP to the user thruough email
       transporter.sendMail(OTP_Mail(email,OTP));
 
-      return res.status(200).json({message:"OTP sent to your email",status:true});
+       // Sending data to frontend
+       return res.status(201).json({status:true,data:user})
         }
 
        /// Hashing the password from user using salt 
@@ -187,11 +188,9 @@ const Signup = async (req, res) => {
        // Saving the user in the database
        user = await user.save();
 
-       // Generating token
-       const token = jwt.sign({email:email,id:user._id},process.env.JWT_SECRET);
 
        // Sending data to frontend
-       return res.status(201).json({status:true,token:token,data:user})
+       return res.status(201).json({status:true,data:user})
 
     } catch (error) {
         console.log(error);
@@ -221,8 +220,8 @@ const ResendOTP = async (req, res) => {
         }
 
         /// generating OTP
-        OTP = generateOTP();
-        hassedOTP = await bcrypt.hash(OTP.toString(),10);
+        let OTP = generateOTP();
+        let hassedOTP = await bcrypt.hash(OTP.toString(),10);
 
        // Saving the OTP in the database
        const varification = await Uservarification.create({
@@ -275,7 +274,7 @@ const verifyEmail = async (req, res) => {
         }
 
         /// Comparing the OTP
-        const isOTPValid = await bcrypt.compare(otp.toString(),varification.otp);
+        const isOTPValid = await bcrypt.compare(otp,varification.otp);
         if(!isOTPValid){
             return res.status(400).json({message:"Invalid OTP",status:false});
         }
@@ -289,7 +288,11 @@ const verifyEmail = async (req, res) => {
 
         await user.save();
 
-        return res.status(200).json({message:"User Verified",status:true});
+        // Generating token
+       const token = jwt.sign({email:user.email,id:user._id},process.env.JWT_SECRET);
+
+       // Sending data to frontend
+       return res.status(201).json({status:true,token:token,data:user})
 
     }
     catch(error){
@@ -298,4 +301,24 @@ const verifyEmail = async (req, res) => {
 }
 }
 
-module.exports = { Googleauth, Login, Signup, verifyEmail , ResendOTP};
+/// Authenticate User
+const Authenticate = async(req,res)=>{
+const {token} = req.body
+const decodedData = jwt.verify(token,process.env.JWT_SECRET);
+
+if(!decodedData){
+    return res.status(401).json({message:"Unauthorized",status:false});
+}
+const user = await User.findById(decodedData.id);
+
+if(!user){
+    return res.status(401).json({message:"Unauthorized",status:false});
+
+}
+if(user.isVerified){
+    return res.status(200).json({status:true,data:user});
+
+}
+}
+
+module.exports = { Googleauth, Login, Signup, verifyEmail , ResendOTP,Authenticate};

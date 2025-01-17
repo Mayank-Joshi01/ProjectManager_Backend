@@ -1,5 +1,5 @@
 const express =require("express")
-const {Signup,Login,Googleauth,verifyEmail,ResendOTP} = require("../controller/auth_controller")
+const {Signup,Login,Googleauth,verifyEmail,ResendOTP, Authenticate} = require("../controller/auth_controller")
 const { check} = require('express-validator');
 const router = express.Router()
 
@@ -21,10 +21,13 @@ router.post("/signup",[
 ],Signup);
 
 /// Router 4 : email verification
-router.post("/emailverification",verifyEmail);
+router.post("/verifyotp",verifyEmail);
 
 /// Router 5 : Resend OTP
 router.post("/resendotp",ResendOTP);
+
+/// Router 6 : Authenciaion
+router.post("/auth",Authenticate);
 
 
 
