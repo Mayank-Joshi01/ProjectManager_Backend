@@ -139,6 +139,11 @@ const Signup = async (req, res) => {
        // Checking if the user exist and is not verified
        if(user && !user.isVerified){
 
+        /// checking if the OTP is already sent
+        const otp_sent_already = await Uservarification.countDocuments();
+
+        if(otp_sent_already>1){ const old_otp_deleted = await Uservarification.findOneAndDelete({owner:user._id}); }
+
         /// generating OTP
         OTP = generateOTP();
         hassedOTP = await bcrypt.hash(OTP.toString(),10);
