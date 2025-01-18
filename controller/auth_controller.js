@@ -48,7 +48,8 @@ const Googleauth = async (req, res) => {
         user = await User.create({
             name:name,
             email:email,
-            password:"googleLogin"
+            password:"googleLogin",
+            isVerified:true
         })
 
         // Generating token 
@@ -142,7 +143,9 @@ const Signup = async (req, res) => {
         /// checking if the OTP is already sent
         const otp_sent_already = await Uservarification.countDocuments();
 
-        if(otp_sent_already>1){ const old_otp_deleted = await Uservarification.findOneAndDelete({owner:user._id}); }
+        if(otp_sent_already>1){ const old_otp_deleted = await Uservarification.findOneAndDelete({owner:user._id}); 
+    
+        console.log(old_otp_deleted);}
 
         /// generating OTP
         OTP = generateOTP();

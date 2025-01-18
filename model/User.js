@@ -24,6 +24,10 @@ isVerified:{
     default:false,
     required:true
 },
+about:{
+    type:String,
+    default:"Student"
+}
 })
 
 const User = mongoose.model("User",userSchma)
