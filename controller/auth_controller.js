@@ -143,7 +143,7 @@ const Signup = async (req, res) => {
         /// checking if the OTP is already sent
         const otp_sent_already = await Uservarification.countDocuments();
 
-        if(otp_sent_already>1){ const old_otp_deleted = await Uservarification.findOneAndDelete({owner:user._id}); 
+        if(otp_sent_already>0){ const old_otp_deleted = await Uservarification.findOneAndDelete({owner:user._id}); 
     
         console.log(old_otp_deleted);}
 
@@ -222,6 +222,7 @@ const ResendOTP = async (req, res) => {
             return res.status(400).json({message:"Sooory Internal Server Error",status:false});
         }
 
+        else{
         /// generating OTP
         let OTP = generateOTP();
         let hassedOTP = await bcrypt.hash(OTP.toString(),10);
@@ -231,6 +232,7 @@ const ResendOTP = async (req, res) => {
            owner:user._id,
            otp:hassedOTP
        })
+    }
 
        /// Sending the OTP to the user thruough email
       transporter.sendMail(OTP_Mail(email,OTP));

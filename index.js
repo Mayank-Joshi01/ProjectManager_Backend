@@ -23,6 +23,7 @@ app.use(cors());
 
 /// Middlewer to deal with JSON data
 app.use(express.json());
+app.use(express.urlencoded({limit: '100mb', extended: true}));
 
 /// Handeling routes 
 app.use("/api/auth",auth_route)

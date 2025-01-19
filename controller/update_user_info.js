@@ -91,7 +91,7 @@ if(!password || !user){
     return res.status(400).json({message:"Some Internal Server Error",status:false});
 }
 
-if(!isValidObjectId(user._id)){
+if(!isValidObjectId(user.id)){
     return res.status(400).json({message:"Some Internal Server Error",status:false});
 }
 
@@ -113,4 +113,52 @@ return res.status(200).json({message:"Password Updated Successfully",status:true
 
 }
 
-module.exports = {Update_Password_token,Reset_password}
+/// Route : 3
+//// To update uer Information like image , name , about
+
+const Update_User_Info = async (req,res)=>{
+    try{
+        var Update_Completed;
+        const {name,about} = req.body;
+        const user = req.user;
+        
+         if(!user){
+             return res.status(400).json({message:"User Dosent Exist",status:false});
+        }
+
+        if(!isValidObjectId(user.id)){
+            return res.status(400).json({message:"Invalid Object ID",status:false});
+        }
+
+        if(!name || !about){
+            return res.status(400).json({message:"Invalid Input",status:false});
+        }
+
+        if(!req.file){
+              Update_Completed = await User.findByIdAndUpdate(user.id,{name:name,about:about});
+              if(!Update_Completed){
+                return res.status(400).json({message:"Some Internal Server Error",status:false});}
+    
+                const User_data = await User.findById(user.id);
+              return res.status(200).json({message:"Your Info Updated Sucessfully",status:true,user:User_data});
+        } 
+        else{
+            Update_Completed = await User.findByIdAndUpdate(user.id,{name:name,about:about,image:req.file.buffer});
+            if(!Update_Completed){
+                return res.status(400).json({message:"Some Internal Server Error",status:false});}
+    
+                const User_data = await User.findById(user.id);
+            return res.status(200).json({message:"Image Updated Successfully",status:true,user:User_data});
+        }
+
+      
+
+       
+    }
+    catch(error){
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error",status:false });
+    }
+}
+
+module.exports = {Update_Password_token,Reset_password,Update_User_Info}
