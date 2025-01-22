@@ -10,6 +10,7 @@ const Connect = require('./DB');
 const app = express();
 const auth_route = require("./routes/auth")
 const user_route = require("./routes/user")
+const project_route = require("./routes/project")
 
 
 /// PORT
@@ -28,6 +29,7 @@ app.use(express.urlencoded({limit: '100mb', extended: true}));
 /// Handeling routes 
 app.use("/api/auth",auth_route)
 app.use("/api/user",user_route)
+app.use("/api/project",project_route)
 
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
