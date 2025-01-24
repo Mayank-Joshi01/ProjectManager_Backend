@@ -20,7 +20,11 @@ const PORT = process.env.PORT || 3000;
 Connect();
 
 /// Middlewer to deal with CORS
-app.use(cors({origin:"http://localhost:5173"}));
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow requests only from this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+  }));
 
 /// Middlewer to deal with JSON data
 app.use(express.json());
