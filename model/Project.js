@@ -6,6 +6,10 @@ const Project_Schema = new mongoose.Schema({
         required:true,
         ref:"User"
     },
+    Project_Name:{
+        type:String,
+        required:true
+    },
      Pending_Task:{
             type:Array,
             required:true
@@ -16,7 +20,7 @@ const Project_Schema = new mongoose.Schema({
         },
     link:{
         type:String,
-        required:true
+        default:"",
     }   
 })
 

@@ -4,7 +4,7 @@ const User = require("../model/User");
 
 ////////// To Fetch the Projects
 const fetchProjects = async (req, res) => {
-    const { user_id } = req.body;
+    const  user_id  = req.user.id;
     try {
         const user = await User.findById(user_id);
 
@@ -21,7 +21,8 @@ const fetchProjects = async (req, res) => {
 
 ///////// To Add the Project
 const addProject = async (req, res) => {
-    const { user_id, link, Pending_Task} = req.body;
+    const user_id  = req.user.id;
+    const {link, Title,Pending_Task} = req.body;
 
     try{
         const user = await User.findById(user_id);
@@ -33,6 +34,7 @@ const addProject = async (req, res) => {
         const project = await Project.create({
             owner:user_id,
             link:link,
+            Project_Name:Title,
             Pending_Task:Pending_Task,
             Completed_Task:[]
         })
@@ -45,15 +47,49 @@ const addProject = async (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" ,status:false});
+        console.log(error)
     }
 };
 
 ////////// To Update the Project
-const updateProject = async (req, res) => {};
+const updateProject = async (req, res) => {
+    const user_id  = req.user.id;
+    const {project_id,link, Title,Pending_Task,Completed_Task} = req.body;
+    console.log(req.body)
+    try{
+        if(!user_id || !project_id){
+            return res.status(400).json({message:"Invalid Request",status:false})
+        }
+         const user = await User.findById(user_id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found",status:false });
+        }
+
+        const project = await Project.findById(project_id);
+
+        if(!project){
+            return res.status(404).json({message:"Project not found",status:false})
+        }
+
+        const updated_project = await Project.findByIdAndUpdate(project_id,{link:link,Project_Name:Title,Pending_Task:Pending_Task,Completed_Task:Completed_Task},{new:true});
+
+        if(!updated_project){
+            return res.status(400).json({message:"Project not updated",status:false})
+        }
+        console.log(updated_project)
+        res.status(200).json({message:"Project updated Sucessfully",project:updated_project,status:true});
+    }
+        catch(error){
+            res.status(500).json({message:"Internal Server Error",status:false})
+            console.log(error)
+        }
+}
 
 ////////// To Delete the Project
 const deleteProject = async (req, res) => {
-    const {user_id,project_id} = req.body;
+    const  user_id  = req.user.id;
+    const project_id = req.params.id;
 
     try{
 
@@ -87,6 +123,7 @@ const deleteProject = async (req, res) => {
 }
 catch(error){
     res.status(500).json({message:"Internal Server Error",status:false})
+    console.log(error)
 }
 };
 

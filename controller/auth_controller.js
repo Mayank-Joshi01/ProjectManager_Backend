@@ -203,7 +203,7 @@ const Signup = async (req, res) => {
 
 /// To Resend OTP
 const ResendOTP = async (req, res) => {
-    try{
+    try{ var OTP;
         const {email} = req.body;
 
         if(!email){
@@ -224,7 +224,8 @@ const ResendOTP = async (req, res) => {
 
         else{
         /// generating OTP
-        let OTP = generateOTP();
+         OTP = generateOTP();
+        console.log(OTP)
         let hassedOTP = await bcrypt.hash(OTP.toString(),10);
 
        // Saving the OTP in the database
