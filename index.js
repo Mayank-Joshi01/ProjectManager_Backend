@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 Connect();
 
 /// Middlewer to deal with CORS
-app.use(cors());
+app.use(cors({origin:"http://localhost:5173"}));
 
 /// Middlewer to deal with JSON data
 app.use(express.json());
