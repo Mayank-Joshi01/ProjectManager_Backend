@@ -42,6 +42,11 @@ app.use("/api/auth",auth_route)
 app.use("/api/user",user_route)
 app.use("/api/project",project_route)
 
+app.get("/", (req, res) => {
+    res.send("Hello World");
+}
+);
+
 app.listen(PORT, () => {
     console.log(`Server is running at http://localhost:${PORT}`);
 });
