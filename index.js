@@ -24,8 +24,15 @@ app.use(cors({
     origin: 'http://localhost:5173', // Allow requests only from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    credentials: true, // Allow cookies if needed
   }));
 
+  app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Allow cookies if needed
+}));
 /// Middlewer to deal with JSON data
 app.use(express.json());
 app.use(express.urlencoded({limit: '100mb', extended: true}));
