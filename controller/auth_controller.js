@@ -3,7 +3,7 @@ const Uservarification = require( "../model/varificatonUser.js");
 const jwt = require( "jsonwebtoken");
 const axios = require("axios");
 const { validationResult } = require('express-validator');
-const {generateOTP , transporter,Plain_Mail,OTP_Mail} = require("../controller/emailVerification.js");
+const {generateOTP , transporter,generatePlainEmail,generateOtpEmail} = require("../controller/emailVerification.js");
 const bcrypt = require("bcryptjs");
 const  oAuth2Client  = require("../utils/Google_Config.js");
 const {isValidObjectId} = require("mongoose");
@@ -156,7 +156,7 @@ const Signup = async (req, res) => {
        })
 
        /// Sending the OTP to the user thruough email
-      transporter.sendMail(OTP_Mail(email,OTP));
+      transporter.sendMail(generateOtpEmail(email,OTP));
 
        // Sending data to frontend
        return res.status(201).json({status:true,data:user})
@@ -184,7 +184,7 @@ const Signup = async (req, res) => {
        })
 
        /// Sending the OTP to the user thruough email
-      transporter.sendMail(OTP_Mail(email,OTP));
+      transporter.sendMail(generateOtpEmail(email,OTP));
 
        // Saving the user in the database
        user = await user.save();
@@ -234,7 +234,7 @@ const ResendOTP = async (req, res) => {
     }
 
        /// Sending the OTP to the user thruough email
-      transporter.sendMail(OTP_Mail(email,OTP));
+      transporter.sendMail(generateOtpEmail(email,OTP));
 
       return res.status(200).json({message:"OTP sent to your email",status:true});
     }
@@ -286,7 +286,7 @@ const verifyEmail = async (req, res) => {
         user.isVerified = true;
 
         /// sending Welcome Email
-        transporter.sendMail(Plain_Mail(user.email,"Welcome","Welcome to our website"));
+        transporter.sendMail(generatePlainEmail(user.email,"Welcome Email","Welcome to our website"));
 
         await Uservarification.findByIdAndDelete(varification._id);
 
