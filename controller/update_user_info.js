@@ -2,7 +2,7 @@ const User = require( "../model/User.js");
 const UpdatePassword = require("../model/update_password.js");
 const jwt = require( "jsonwebtoken");
 const axios = require("axios");
-const { transporter,Plain_Mail,OTP_Mail} = require("../controller/emailVerification.js");
+const { transporter,generatePlainEmail,generatePasswordUpdateEmail} = require("../controller/emailVerification.js");
 const bcrypt = require("bcryptjs");
 const {isValidObjectId} = require("mongoose");
 const crypto = require("crypto");
@@ -11,6 +11,7 @@ const crypto = require("crypto");
 /// Function to create random bytes
 const createRandomoBytes = ()=>{
     return new Promise((resolve,reject)=>{
+        //// Note : crypto is a built in module in node js , which is used to generate random bytes
         crypto.randomBytes(30,(err,buf)=>{
             if(err){
                 reject(err);
@@ -44,9 +45,9 @@ const Update_Password_token = async (req,res)=>{
     /// Checking if old password is same as new password
     const old_password = user.password;
     const is_password_same = await bcrypt.compare(password,old_password);
-    if(is_password_same){
-     return res.status(400).json({message:"Old Password and New Password Cannot be same",err:1,status:false});
-    }
+
+    if(is_password_same) return res.status(400).json({message:"Old Password and New Password Cannot be same",err:1,status:false});
+    
 
         /// generating token
         let token = await createRandomoBytes();
@@ -57,9 +58,8 @@ const Update_Password_token = async (req,res)=>{
         /// Checking if token is already sent
         const tonken_already_sent = await UpdatePassword.findOne({owner:user._id})
         console.log(tonken_already_sent)
-        if(tonken_already_sent){
-            return res.status(400).json({message:"Only  can update password atleast 1 hr later of last update",err:2,status:false});
-        }
+
+        if(tonken_already_sent) return res.status(400).json({message:"Only  can update password atleast 1 hr later of last update",err:2,status:false});
 
        // Saving the OTP in the database
        const varification = await UpdatePassword.create({
@@ -69,7 +69,7 @@ const Update_Password_token = async (req,res)=>{
        })
 
        /// Sending the OTP to the user thruough email
-      transporter.sendMail(OTP_Mail(email,`http://http://localhost:5173/reset_password?token=${token}&id=${user._id}`));
+      transporter.sendMail(generatePasswordUpdateEmail(email,`http://http://localhost:5173/reset_password?token=${token}&id=${user._id}`));
 
 
       return res.status(200).json({message:"OTP sent to your email",status:true});
@@ -101,7 +101,7 @@ const Update_Completed = await User.findByIdAndUpdate(user._id,{password:passwor
 if(!Update_Completed){
     return res.status(400).json({message:"Some Internal Server Error",status:false});}
 
-transporter.sendMail(Plain_Mail(user.email,"Password Updated Successfully"));
+transporter.sendMail(generatePlainEmail(user.email,"Password Update","Password Updated Successfully"));
 
 return res.status(200).json({message:"Password Updated Successfully",status:true});
 
@@ -134,25 +134,13 @@ const Update_User_Info = async (req,res)=>{
             return res.status(400).json({message:"Invalid Input",status:false});
         }
 
-        if(!req.file){
-              Update_Completed = await User.findByIdAndUpdate(user.id,{name:name,about:about});
-              if(!Update_Completed){
-                return res.status(400).json({message:"Some Internal Server Error",status:false});}
     
-                const User_data = await User.findById(user.id);
+              Update_Completed = await User.findByIdAndUpdate(user.id,{name:name,about:about,image : req.file?req.file.buffer:null});
+              
+              if(!Update_Completed) return res.status(400).json({message:"Some Internal Server Error",status:false});
+    
+              const User_data = await User.findById(user.id);
               return res.status(200).json({message:"Your Info Updated Sucessfully",status:true,user:User_data});
-        } 
-        else{
-            Update_Completed = await User.findByIdAndUpdate(user.id,{name:name,about:about,image:req.file.buffer});
-            if(!Update_Completed){
-                return res.status(400).json({message:"Some Internal Server Error",status:false});}
-    
-                const User_data = await User.findById(user.id);
-            return res.status(200).json({message:"Image Updated Successfully",status:true,user:User_data});
-        }
-
-      
-
        
     }
     catch(error){

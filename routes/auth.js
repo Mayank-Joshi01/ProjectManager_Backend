@@ -2,6 +2,7 @@ const express =require("express")
 const {Signup,Login,Googleauth,verifyEmail,ResendOTP, Authenticate} = require("../controller/auth_controller")
 const { check} = require('express-validator');
 const router = express.Router()
+const token_middleware = require("../middleware/token_middleware")
 
 
 /// Route 1 : Google Auth
@@ -27,7 +28,7 @@ router.post("/verifyotp",verifyEmail);
 router.post("/resendotp",ResendOTP);
 
 /// Router 6 : Authenciaion
-router.post("/auth",Authenticate);
+router.post("/auth",token_middleware,Authenticate);
 
 
 

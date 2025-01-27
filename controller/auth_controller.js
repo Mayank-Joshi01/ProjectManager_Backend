@@ -43,7 +43,6 @@ const Googleauth = async (req, res) => {
         return res.status(201).json({status:true,data:user,token:token,img:picture})
     }
     else{
-
         // Creating a new user
         user = await User.create({
             name:name,
@@ -62,7 +61,7 @@ const Googleauth = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error",status:false });
         
     }
     
@@ -107,7 +106,7 @@ const Login = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-       return  res.status(500).json({ message: "Internal Server Error" });
+       return  res.status(500).json({ message: "Internal Server Error" ,status:false});
     }
 };
 
@@ -143,9 +142,8 @@ const Signup = async (req, res) => {
         /// checking if the OTP is already sent
         const otp_sent_already = await Uservarification.countDocuments();
 
-        if(otp_sent_already>0){ const old_otp_deleted = await Uservarification.findOneAndDelete({owner:user._id}); 
-    
-        console.log(old_otp_deleted);}
+        /// Deleting the old OTP
+        if(otp_sent_already>0){ const old_otp_deleted = await Uservarification.findOneAndDelete({owner:user._id}); }
 
         /// generating OTP
         OTP = generateOTP();
@@ -197,7 +195,7 @@ const Signup = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error",status:false });
     }
 };
 
@@ -309,13 +307,12 @@ const verifyEmail = async (req, res) => {
 
 /// Authenticate User
 const Authenticate = async(req,res)=>{
-const {token} = req.body
-const decodedData = jwt.verify(token,process.env.JWT_SECRET);
+const user_id  = req.user.id;
 
-if(!decodedData){
+if(!user_id){
     return res.status(401).json({message:"Unauthorized",status:false});
 }
-const user = await User.findById(decodedData.id);
+const user = await User.findById(user_id);
 
 if(!user){
     return res.status(401).json({message:"Unauthorized",status:false});
