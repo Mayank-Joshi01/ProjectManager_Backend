@@ -20,7 +20,7 @@ const transporter =  nodemailer.createTransport({
 // Function to generate OTP email
 const generateOtpEmail = (recipientEmail, otp) => {
   return {
-    from: '"No reply email👻" <mayankjoshi.in.123@gmail.com>',  // Sender address
+    from: '"No reply email" <mayankjoshi.in.123@gmail.com>',  // Sender address
     to: recipientEmail,  // Recipient's email
     subject: "OTP for Email Verification",  // Email subject
     html: `<html>
@@ -47,7 +47,7 @@ const generateOtpEmail = (recipientEmail, otp) => {
 // Function to generate a plain email
 const generatePlainEmail = (recipientEmail, subject, messageText) => {
   return {
-    from: '"No reply email👻" <mayankjoshi.in.123@gmail.com>',  // Sender address
+    from: '"No reply email" <mayankjoshi.in.123@gmail.com>',  // Sender address
     to: recipientEmail,  // Recipient's email
     subject: subject,  // Email subject
     html: `  <html>
@@ -72,7 +72,7 @@ const generatePlainEmail = (recipientEmail, subject, messageText) => {
 // Function to generate Password Update Request email with improved HTML design
 const generatePasswordUpdateEmail = (recipientEmail, resetLink) => {
   return {
-    from: '"No reply email👻" <mayankjoshi.in.123@gmail.com>',  // Sender address
+    from: '"No reply email" <mayankjoshi.in.123@gmail.com>',  // Sender address
     to: recipientEmail,  // Recipient's email
     subject: "Password Update Request",  // Email subject
     html: `

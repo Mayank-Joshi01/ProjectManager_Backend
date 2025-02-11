@@ -21,7 +21,7 @@ Connect();
 
 /// Middlewer to deal with CORS
 app.use(cors({
-    origin: ['http://localhost:5173',"https://projects-manager-app.vercel.app"], // Allow requests only from this origin
+    origin: ['http://localhost:5174',"https://projects-manager-app.vercel.app"], // Allow requests only from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
     allowedHeaders: ['Content-Type', 'Authorization','token'], // Specify allowed headers
     credentials: true, // Allow cookies if needed
